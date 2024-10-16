@@ -1,0 +1,144 @@
+apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-kapt'
+apply plugin: 'androidx.navigation.safeargs'
+
+android {
+
+    compileSdkVersion 29
+
+    defaultConfig {
+        applicationId "com.nominalista.expenses"
+        versionCode 20
+        versionName "0.4.5"
+        minSdkVersion 21
+        targetSdkVersion 29
+
+        // This indicates to Room where it should export schema of database.
+        javaCompileOptions {
+            annotationProcessorOptions {
+                arguments = ["room.schemaLocation": "$projectDir/schemas".toString()]
+            }
+        }
+
+        // Enables AndroidJUnit4 runner in tests.
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    compileOptions {
+        sourceCompatibility = 1.8
+        targetCompatibility = 1.8
+    }
+
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+
+    sourceSets {
+        // Helps Room to find schema files for testing migrations.
+        androidTest.assets.srcDirs += files("$projectDir/schemas".toString())
+    }
+
+    signingConfigs {
+        release {
+            // These properties can be placed in ~/.gradle/gradle.properties.
+            storeFile file(EXPENSES_STORE_FILE)
+            storePassword EXPENSES_STORE_PASSWORD
+            keyAlias EXPENSES_KEY_ALIAS
+            keyPassword EXPENSES_KEY_PASSWORD
+        }
+    }
+
+    buildTypes {
+        debug {
+            debuggable true
+        }
+
+        release {
+            minifyEnabled false
+            signingConfig signingConfigs.release
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    flavorDimensions "default"
+
+    productFlavors {
+        dev {
+            versionNameSuffix "-dev"
+            applicationIdSuffix ".dev"
+            // Use only English resources to build faster.
+            resConfigs "en", "xxhdpi"
+        }
+
+        prod {}
+    }
+
+    androidExtensions {
+        experimental = true
+    }
+}
+
+dependencies {
+
+    def dependencies = rootProject.ext.appDependencies
+    def testDependencies = rootProject.ext.appTestDependencies
+
+    configurations.all {
+        resolutionStrategy {
+            force 'com.google.code.gson:gson:2.8.0'
+        }
+    }
+
+    // Kotlin
+    implementation dependencies.kotlin
+
+    // AndroidX
+    implementation dependencies.appCompat
+    implementation dependencies.constraintLayout
+    implementation dependencies.coreKtx
+    implementation dependencies.lifecycleExtensions
+    implementation dependencies.lifecycleReactiveStreams
+    implementation dependencies.preference
+    implementation dependencies.recyclerView
+    implementation dependencies.roomRuntime
+    implementation dependencies.roomRxJava
+    implementation dependencies.workRuntime
+    implementation dependencies.workRxJava
+    kapt dependencies.roomCompiler
+
+    // Firebase
+    implementation dependencies.firebaseAuth
+    implementation dependencies.firebaseConfig
+    implementation dependencies.firebaseCore
+    implementation dependencies.firebaseFirestore
+    implementation dependencies.firebaseMessaging
+
+    // Google Play
+    implementation dependencies.googlePlayBilling
+    implementation dependencies.googlePlayBillingExt
+    implementation dependencies.googlePlayServicesAuth
+
+    // Libraries
+    implementation dependencies.coroutinesAndroid
+    implementation dependencies.coroutinesCore
+    implementation dependencies.jxl
+    implementation dependencies.material
+    implementation dependencies.navigationFragment
+    implementation dependencies.navigationUi
+    implementation dependencies.rxAndroid
+    implementation dependencies.rxKotlin
+    implementation dependencies.rxRelay
+    implementation dependencies.threeTen
+
+    // Testing
+    testImplementation testDependencies.jUnit
+    androidTestImplementation testDependencies.jUnit
+    androidTestImplementation testDependencies.core
+    androidTestImplementation testDependencies.rules
+    androidTestImplementation testDependencies.runner
+    androidTestImplementation testDependencies.roomTesting
+}
+
+apply plugin: 'com.google.gms.google-services'
