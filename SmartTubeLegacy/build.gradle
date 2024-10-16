@@ -1,0 +1,79 @@
+// Top-level build file where you can add configuration options common to all sub-projects/modules.
+
+buildscript {
+    repositories {
+        jcenter()
+
+        maven {
+            url 'https://maven.google.com/'
+            name 'Google'
+        }
+        google()
+    }
+
+    dependencies {
+        classpath 'com.android.tools.build:gradle:3.5.0'
+        //classpath 'com.github.jengelman.gradle.plugins:shadow:4.0.4'
+
+        // NOTE: Do not place your application dependencies here; they belong
+        // in the individual module build.gradle files
+    }
+
+    // WARNING: don't use 'project.ext' because IDE 'Cannot infer argument type'
+    // https://stackoverflow.com/questions/20404476/how-to-define-common-android-properties-for-all-modules-using-gradle
+    // Gradle constants example: https://github.com/google/ExoPlayer
+    ext {
+        compileSdkVersion = 28
+        buildToolsVersion = "28.0.3"
+        minSdkVersion = 14
+        targetSdkVersion = 26
+    }
+}
+
+allprojects {
+    repositories {
+        // browse: https://bintray.com/bintray/jcenter
+        jcenter()
+        google()
+
+        // com.android.support libs, constraint lib
+        maven {
+            url 'https://maven.google.com/'
+            name 'Google'
+        }
+
+        // crosswalk
+        maven {
+            url 'https://download.01.org/crosswalk/releases/crosswalk/android/maven2'
+        }
+
+        // add lib from github (e.g. exoplayer-amazon-port)
+        // should be the last in the list
+        maven { url 'https://jitpack.io' }
+
+        // *.aar custom libs
+        //flatDir {
+        //    dirs 'libs'
+        //}
+    }
+
+    gradle.projectsEvaluated {
+        tasks.withType(JavaCompile) {
+            options.compilerArgs << "-Xlint:unchecked" << "-Xlint:deprecation"
+        }
+    }
+}
+
+task clean(type: Delete) {
+    delete rootProject.buildDir
+}
+
+//apply plugin: 'com.github.johnrengelman.shadow'
+//apply plugin: 'java'
+//
+//// Configuring Filtering for Relocation
+//shadowJar {
+//    relocate('com.google.android.exoplayer2.util', 'com.liskovsoft.smartyoutubetv.flavors.exoplayer.player.helpers') {
+//        include 'com.google.android.exoplayer2.util.Log'
+//    }
+//}
